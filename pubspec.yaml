@@ -34,6 +34,10 @@ dependencies:
   # device-info 获取设备相关信息
   device_info: ^0.2.0
 
+  # device-info 获取设备相关信息
+  dio: ^3.0.9
+  rxdart: ^0.24.1
+
 
 
 dev_dependencies:
