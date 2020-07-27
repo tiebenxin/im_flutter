@@ -1,3 +1,9 @@
+import 'package:cxdemo/dio/Api.dart';
+import 'package:cxdemo/dio/address.dart';
+import 'package:cxdemo/dio/data_helper.dart';
+import 'package:cxdemo/dio/http_manager.dart';
+import 'package:cxdemo/dio/result_data.dart';
+import 'package:cxdemo/utils/device_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -53,7 +59,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil(width:750,height:1334)..init(context);
+    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334)
+      ..init(context);
     //logo图片区域
     Widget logoImageArea = new Container(
       alignment: Alignment.topCenter,
@@ -139,8 +146,8 @@ class _LoginPageState extends State<LoginPage> {
                 .primaryTextTheme
                 .headline,
           ),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)),
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           onPressed: () {
             //点击登录按钮，解除焦点，回收键盘
             _focusNodePassWord.unfocus();
@@ -149,6 +156,8 @@ class _LoginPageState extends State<LoginPage> {
               _formKey.currentState.save();
               //todo 登录操作
               print("$_username + $_password");
+//              Api.apiLogin();
+              login(_username, _password);
             }
           }),
     );
@@ -165,11 +174,17 @@ class _LoginPageState extends State<LoginPage> {
         },
         child: new ListView(
           children: <Widget>[
-            new SizedBox(height: ScreenUtil.getInstance().setHeight(80),),
+            new SizedBox(
+              height: ScreenUtil.getInstance().setHeight(80),
+            ),
             logoImageArea,
-            new SizedBox(height: ScreenUtil.getInstance().setHeight(70),),
+            new SizedBox(
+              height: ScreenUtil.getInstance().setHeight(70),
+            ),
             inputTextArea,
-            new SizedBox(height: ScreenUtil.getInstance().setHeight(80),),
+            new SizedBox(
+              height: ScreenUtil.getInstance().setHeight(80),
+            ),
             loginButtonArea,
           ],
         ),
@@ -220,5 +235,28 @@ class _LoginPageState extends State<LoginPage> {
       return '密码长度不正确';
     }
     return null;
+  }
+
+  void login(phone, password) async {
+    var params = DataHelper.getBaseMap();
+    params.clear();
+    params["phone"] = phone;
+    params["password"] = DataHelper.string2MD5(password);
+    params["devid"] = DeviceUtil.getDeviceId(); //极光推送设备id
+    params["platform"] = "Android";
+    params["phoneModel"] = DeviceUtil.getPhoneModel();
+    params["installChannel"] = "";
+    params["deviceDetail"] = DeviceUtil.getDeviceId(); //本机设备id或imei
+    params["deviceName"] = DeviceUtil.getDeviceName(); //本机设备id或imei
+
+    ResultData resultData = await HttpManager.getInstance().post(
+        Address.LOGIN_BY_PHOME, params: params);
+    setState(() {
+      if (resultData.isSuccess) {
+
+      } else {
+
+      }
+    });
   }
 }

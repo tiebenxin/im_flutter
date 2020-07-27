@@ -1,17 +1,15 @@
+import 'package:cxdemo/dio/target_type.dart';
 
-import 'HttpManager.dart';
-import 'TargetType.dart';
+import 'http_manager.dart';
 
 class Api {
-
-  static apiDemo() {
+  static apiLogin() {
     return TargetType().config(
-      path: "",
-      headers: {},
-      method: MSNetServiceMethod.GET,
-      parameters: {},
-      encoding: ParameterEncoding.URLEncoding
-    );
+        path: "",
+        headers: {},
+        method: ERequestMethod.GET,
+        parameters: {},
+        encoding: ParameterEncoding.URLEncoding);
   }
 }
 
