@@ -4,5 +4,6 @@ class ResultData {
   int code;
   var headers;
 
-  ResultData(this.data, this.isSuccess, this.code, {this.headers});
+  ResultData(this.data, this.isSuccess,  this.code,
+      {this.headers});
 }

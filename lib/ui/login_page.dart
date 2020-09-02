@@ -1,8 +1,8 @@
-import 'package:cxdemo/dio/Api.dart';
 import 'package:cxdemo/dio/address.dart';
 import 'package:cxdemo/dio/data_helper.dart';
 import 'package:cxdemo/dio/http_manager.dart';
 import 'package:cxdemo/dio/result_data.dart';
+import 'package:cxdemo/model/token_bean.dart';
 import 'package:cxdemo/utils/device_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +28,9 @@ class _LoginPageState extends State<LoginPage> {
   var _username = ''; //密码
   var _isShowPwd = false; //是否显示密码
   var _isShowClear = false; //是否显示输入框尾部的清除按钮
+  var deviceId = ''; //设备Id;
+  var phoneModel = ''; //手机品牌
+  var deviceName = ''; //手机名字
 
   @override
   void initState() {
@@ -45,6 +48,7 @@ class _LoginPageState extends State<LoginPage> {
       }
       setState(() {});
     });
+    initDeviceInfo();
     super.initState();
   }
 
@@ -59,8 +63,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334)
-      ..init(context);
+    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334)..init(context);
     //logo图片区域
     Widget logoImageArea = new Container(
       alignment: Alignment.topCenter,
@@ -92,19 +95,20 @@ class _LoginPageState extends State<LoginPage> {
                   //尾部添加清除按键
                   suffixIcon: (_isShowClear)
                       ? IconButton(
-                    icon: Icon(Icons.clear),
-                    onPressed: () {
-                      //清除输入内容
-                      _userNameController.clear();
-                    },
-                  )
+                          icon: Icon(Icons.clear),
+                          onPressed: () {
+                            //清除输入内容
+                            _userNameController.clear();
+                          },
+                        )
                       : null,
                 ),
-                //验证用户名（手机号）
-                validator: validateUserName,
+                //验证用户名（手机号） //暂不验证
+//                validator: validateUserName,
                 //保存数据
                 onSaved: (String value) {
-                  _username = value;
+//                  _username = value;
+                  _username = "15377311916";
                 },
               ),
               new TextFormField(
@@ -124,9 +128,10 @@ class _LoginPageState extends State<LoginPage> {
                           });
                         })),
                 obscureText: !_isShowPwd,
-                validator: validatePassWord,
+//                validator: validatePassWord,//暂不检测空指针
                 onSaved: (String value) {
-                  _password = value;
+//                  _password = value;
+                  _password = "123456";
                 },
               )
             ],
@@ -141,13 +146,10 @@ class _LoginPageState extends State<LoginPage> {
           color: Colors.blue[300],
           child: Text(
             "登录",
-            style: Theme
-                .of(context)
-                .primaryTextTheme
-                .headline,
+            style: Theme.of(context).primaryTextTheme.headline,
           ),
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           onPressed: () {
             //点击登录按钮，解除焦点，回收键盘
             _focusNodePassWord.unfocus();
@@ -206,6 +208,15 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void initDeviceInfo() {
+    Future<String> future1 = DeviceUtil.getDeviceId();
+    future1.then((value) => deviceId = value);
+    Future<String> future2 = DeviceUtil.getPhoneModel();
+    future2.then((value) => phoneModel = value);
+    Future<String> future3 = DeviceUtil.getDeviceName();
+    future3.then((value) => deviceName = value);
+  }
+
   /**
    * 验证用户名
    */
@@ -227,11 +238,7 @@ class _LoginPageState extends State<LoginPage> {
   String validatePassWord(value) {
     if (value.isEmpty) {
       return '密码不能为空';
-    } else if (value
-        .trim()
-        .length < 6 || value
-        .trim()
-        .length > 18) {
+    } else if (value.trim().length < 6 || value.trim().length > 18) {
       return '密码长度不正确';
     }
     return null;
@@ -242,21 +249,22 @@ class _LoginPageState extends State<LoginPage> {
     params.clear();
     params["phone"] = phone;
     params["password"] = DataHelper.string2MD5(password);
-    params["devid"] = DeviceUtil.getDeviceId(); //极光推送设备id
+    params["devid"] = deviceId; //极光推送设备id
     params["platform"] = "Android";
-    params["phoneModel"] = DeviceUtil.getPhoneModel();
-    params["installChannel"] = "";
-    params["deviceDetail"] = DeviceUtil.getDeviceId(); //本机设备id或imei
-    params["deviceName"] = DeviceUtil.getDeviceName(); //本机设备id或imei
+    params["phoneModel"] = phoneModel;
+    params["installChannel"] = "default_android";
+    params["deviceDetail"] = deviceId; //本机设备id或imei
+    params["deviceName"] = deviceName; //本机设备id或imei
 
-    ResultData resultData = await HttpManager.getInstance().post(
-        Address.LOGIN_BY_PHOME, params: params);
+    ResultData resultData = await HttpManager.getInstance()
+        .post(Address.LOGIN_BY_PHOME, params: params);
     setState(() {
       if (resultData.isSuccess) {
+        TokenBean tokenBean = TokenBean.fromJson(resultData.data);
+        if(tokenBean != null){
 
-      } else {
-
-      }
+        }
+      } else {}
     });
   }
 }

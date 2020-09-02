@@ -2,7 +2,6 @@ import 'package:cxdemo/dio/request_result.dart';
 import 'package:cxdemo/dio/response_interceptor.dart';
 import 'package:cxdemo/dio/result_data.dart';
 import 'package:cxdemo/dio/target_type.dart';
-import 'package:cxdemo/utils/loading_utils.dart';
 import 'package:dio/dio.dart';
 
 import 'address.dart';
@@ -26,7 +25,7 @@ class HttpManager {
     //初始化
     if (null == dio) {
       dio = new Dio(
-          new BaseOptions(baseUrl: Address.BASE_URL, connectTimeout: 15000));
+          new BaseOptions(baseUrl: Address.BASE_URL, connectTimeout: 15000,responseType: ResponseType.plain));
       dio.interceptors.add(new LogInterceptors());
       dio.interceptors.add(new ResponseInterceptors());
     }
@@ -123,6 +122,9 @@ class HttpManager {
     if (withLoading) {
 //      LoadingUtils.show();
     }
+    if(params != null){
+      dio.options.queryParameters = params;
+    }
 
     Response response;
     try {
@@ -149,7 +151,9 @@ class HttpManager {
     if (withLoading) {
 //      LoadingUtils.show();
     }
-
+    if(params != null){
+      dio.options.queryParameters = params;
+    }
     Response response;
 
     try {
