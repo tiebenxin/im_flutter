@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
     Widget logoImageArea = new Container(
       alignment: Alignment.topCenter,
       child: ClipOval(
-        child: Image.asset("images/default_image.webp",
+        child: Image.asset("assets/images/default_image.webp",
             height: 100, width: 100, fit: BoxFit.cover),
       ),
     );
